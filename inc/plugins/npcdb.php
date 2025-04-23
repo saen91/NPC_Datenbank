@@ -671,7 +671,8 @@ function npcdb_activate()
 	include MYBB_ROOT."/inc/adminfunctions_templates.php";
 	find_replace_templatesets("newreply", "#".preg_quote('{$loginbox}')."#i", '{$loginbox} {$filternpc}');
 	find_replace_templatesets("newthread", "#".preg_quote('{$loginbox}')."#i", '{$loginbox} {$filternpc}');
-	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'quoted\']}')."#i", '{$post[\'quoted\']} {$post[\'npc_postbit\']}');
+	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'message\']}')."#i", '{$post[\'npc_postbit\']} {$post[\'message\']}');
+	find_replace_templatesets("postbit", "#".preg_quote('{$post[\'message\']}')."#i", '{$post[\'npc_postbit\']} {$post[\'message\']}');
 }
 
 // Plugin-Deaktivierung
@@ -684,7 +685,7 @@ function npcdb_deactivate()
 	find_replace_templatesets("newreply", "#".preg_quote('{$filternpc}')."#i", '', 0);
 	find_replace_templatesets("newthread", "#".preg_quote('{$filternpc}')."#i", '', 0);
 	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'npc_postbit\']}')."#i", '', 0);
-
+	find_replace_templatesets("postbit", "#".preg_quote('{$post[\'npc_postbit\']}')."#i", '', 0);
 }
 
 
