@@ -34,6 +34,9 @@ Man braucht einen NPC Account, dieser ist in den Einstellungen zu hinterlegen.
 - npcdb_new
 - npcdb_postbit
 
+## Neuer Ordner
+- npcdb unter uploades am Hauptverzeichnis
+
 ## Neue Variablen:
 - postbit/postbit_classic `{$post['npc_postbit']}` vor `{$post['message']}`
 - newreply `{$filternpc}` hinter `{$loginbox}`
