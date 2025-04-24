@@ -888,34 +888,57 @@ function npcdb_editpost()
     }    
 }
 
+
+
 // DAS EDIT && Hook ---> speichern von einem anderen NPC aus Liste
 $plugins->add_hook("editpost_do_editpost_end", "npcdb_do_editpost");
 
-function npcdb_do_editpost () {
-	
-	global $db, $mybb, $tid, $pid;
-	
-	//die npcid direkt abrufen 
+function npcdb_do_editpost() {
+	global $db, $mybb, $pid, $tid;
+
+	// NPC-ID vom Formular
 	$npcid = $mybb->get_input('npcid');
-	
+
+	// Wenn keine NPC-ID übermittelt wurde, abbrechen
+	if ($npcid <= 0) {
+		return;
+	}
+
+	// Prüfen, ob NPC mit dieser ID existiert 
 	// NPC-Daten aus der Datenbank abrufen
-    $npc_query = $db->simple_select("npcdb", "*", "npcid = '{$npcid}'");
-    $npc_data = $db->fetch_array($npc_query);
-	
-	// Überprüfen, ob NPC-Daten gefunden wurden
-    if ($npc_data) {
-		
+	$npc_query = $db->simple_select("npcdb", "*", "npcid = '{$npcid}'");
+	$npc_data = $db->fetch_array($npc_query);
+
+	if (!$npc_data) {
+		return;
+	}
+
+	// Prüfen, ob es schon einen Eintrag für diesen Post gibt
+	$check_query = $db->simple_select("npcdb_posts", "pid", "pid = '{$pid}'");
+	$existing_entry = $db->fetch_field($check_query, "pid");
+
+	// Daten vorbereiten
 	$update_data = [
-		"npcid" => (int)$npcid,
-		"npcname" => $npc_data['npcname'], 
-		"npcimage" => $npc_data['npcimage'],
-		"npcdesc" => $npc_data['npcdesc']
+		"npcid" => $npcid,
+		"npcname" => $db->escape_string($npc_data['npcname']),
+		"npcimage" => $db->escape_string($npc_data['npcimage']),
+		"npcdesc" => $db->escape_string($npc_data['npcdesc'])
 	];
-	
-	//Daten in die npcdb_posts Tabelle aktualisieren 
-	 // Daten in die npcdb_posts Tabelle aktualisieren
-        $db->update_query("npcdb_posts", $update_data, "pid = '{$pid}'");
-    }			
+
+	if ($existing_entry) {
+		// tid noch nicht gesetzt oder 0, dann ausfüllen
+		if (empty($existing_entry['tid'])) {
+			$update_data['tid'] = $tid;
+		}
+
+		// Eintrag existiert → aktualisiere
+		$db->update_query("npcdb_posts", $update_data, "pid = '{$pid}'");
+	} else {
+		// Kein Eintrag → neuen erstellen
+		$update_data['pid'] = $pid;
+		$update_data['tid'] = $tid;
+		$db->insert_query("npcdb_posts", $update_data);
+	}
 }
 
 	
