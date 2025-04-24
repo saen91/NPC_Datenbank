@@ -52,6 +52,7 @@ function npcdb_install()
 		`npcid` int(11)  NOT NULL, 
 		`npcname` varchar(255) CHARACTER SET utf8 NOT NULL,	
 		`npcimage` varchar (255) NOT NULL,
+		`npcdesc` varchar (255) NOT NULL,
 		PRIMARY KEY (`npcpid`)
 		)
         ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci AUTO_INCREMENT=1
@@ -671,6 +672,7 @@ function npcdb_activate()
 	include MYBB_ROOT."/inc/adminfunctions_templates.php";
 	find_replace_templatesets("newreply", "#".preg_quote('{$loginbox}')."#i", '{$loginbox} {$filternpc}');
 	find_replace_templatesets("newthread", "#".preg_quote('{$loginbox}')."#i", '{$loginbox} {$filternpc}');
+	find_replace_templatesets("editpost", "#".preg_quote('{$posticons}')."#i", '{$filternpc} {$posticons}');
 	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'message\']}')."#i", '{$post[\'npc_postbit\']} {$post[\'message\']}');
 	find_replace_templatesets("postbit", "#".preg_quote('{$post[\'message\']}')."#i", '{$post[\'npc_postbit\']} {$post[\'message\']}');
 }
@@ -684,6 +686,7 @@ function npcdb_deactivate()
 	include MYBB_ROOT."/inc/adminfunctions_templates.php";
 	find_replace_templatesets("newreply", "#".preg_quote('{$filternpc}')."#i", '', 0);
 	find_replace_templatesets("newthread", "#".preg_quote('{$filternpc}')."#i", '', 0);
+	find_replace_templatesets("editpost", "#".preg_quote('{$filternpc}')."#i", '', 0);
 	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'npc_postbit\']}')."#i", '', 0);
 	find_replace_templatesets("postbit", "#".preg_quote('{$post[\'npc_postbit\']}')."#i", '', 0);
 }
@@ -758,7 +761,8 @@ $plugins->add_hook("newthread_do_newthread_end", "npcdb_do_newthread");
 				"tid" => (int)$tid, 
 				"npcid" => $npcid,
 				"npcname" => $npc_data['npcname'], // NPC-Name aus der Datenbank
-				"npcimage" => $npc_data['npcimage'] // NPC-Bild aus der Datenbank
+				"npcimage" => $npc_data['npcimage'], // NPC-Bild aus der Datenbank
+				"npcdesc" => $npc_data['npcdesc'] // Beschreibung aus der Datenbank
 			];
 
 
@@ -830,7 +834,8 @@ $plugins->add_hook("newreply_do_newreply_end", "npcdb_do_newreply");
 				"tid" => (int)$tid, 
 				"npcid" => $npcid,
 				"npcname" => $npc_data['npcname'], // NPC-Name aus der Datenbank
-				"npcimage" => $npc_data['npcimage'] // NPC-Bild aus der Datenbank
+				"npcimage" => $npc_data['npcimage'], // NPC-Bild aus der Datenbank
+				"npcdesc" => $npc_data['npcdesc'] // Beschreibung aus der Datenbank
 			];
 
 			// Daten in die npcdb_posts Tabelle einfügen
@@ -903,7 +908,8 @@ function npcdb_do_editpost () {
 	$update_data = [
 		"npcid" => (int)$npcid,
 		"npcname" => $npc_data['npcname'], 
-		"npcimage" => $npc_data['npcimage']
+		"npcimage" => $npc_data['npcimage'],
+		"npcdesc" => $npc_data['npcdesc']
 	];
 	
 	//Daten in die npcdb_posts Tabelle aktualisieren 
@@ -945,6 +951,7 @@ function npcdb_postbit(&$post)
         if ($npc_info) {
             // NPC-Name und Bild in die Postbit-Ausgabe einfügen
             $post['npcname'] = $npc_info['npcname'];
+			$post['npcdesc'] = $npc_info['npcdesc'];
 			
 			$post['npcimage'] ='';
 			if (!empty($npc_info['npcimage'])) {
