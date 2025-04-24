@@ -42,4 +42,4 @@ Man braucht einen NPC Account, dieser ist in den Einstellungen zu hinterlegen.
 - newreply `{$filternpc}` hinter `{$loginbox}`
 - newthread `{$filternpc}` hinter `{$loginbox}`
 - editpost  `{$filternpc}` vor `{$posticons}`
-- npcdb_postbit  `{$post['npcdesc']}`
+- npcdb_postbit  `{$post['npcdesc']}` für Beschreibung innerhalb der Postbit
